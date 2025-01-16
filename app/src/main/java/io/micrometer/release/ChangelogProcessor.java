@@ -43,9 +43,9 @@ class ChangelogProcessor {
         this.outputFile = changelogOutput;
     }
 
-    void processChangelog(File changelog) throws Exception {
+    void processChangelog(File changelog, File oldChangelog) throws Exception {
         Set<String> testAndOptional = fetchTestAndOptionalDependencies();
-        processChangelog(testAndOptional, changelog);
+        processChangelog(testAndOptional, changelog, oldChangelog);
     }
 
     private Set<String> fetchTestAndOptionalDependencies() throws Exception {
@@ -111,7 +111,7 @@ class ChangelogProcessor {
         }
     }
 
-    private void processChangelog(Set<String> excludedDependencies, File changelog) throws IOException {
+    private void processChangelog(Set<String> excludedDependencies, File changelog, File oldChangelog) throws IOException {
         log.info("Processing changelog...");
         List<String> lines = Files.readAllLines(changelog.toPath());
         List<String> header = new ArrayList<>();
