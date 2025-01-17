@@ -43,9 +43,13 @@ class PostReleaseWorkflowAcceptanceTests {
 
     File outputChangelog = new File(tmpDir.toFile(), "output.md");
 
+    File oldOutputChangelog =  new File(
+        AssertingReleaseNotesUpdater.class.getResource("/processor/micrometer-1.13.9-output.md")
+            .toURI());
+
     MilestoneUpdater milestoneUpdater = mock();
 
-    PostReleaseWorkflowAcceptanceTests() throws IOException {
+    PostReleaseWorkflowAcceptanceTests() throws IOException, URISyntaxException {
     }
 
     @Test
@@ -54,6 +58,7 @@ class PostReleaseWorkflowAcceptanceTests {
         PostReleaseWorkflow postReleaseWorkflow = new PostReleaseWorkflow(
             new ChangelogGeneratorDownloader(ChangelogGeneratorDownloader.CHANGELOG_GENERATOR_URL,
                 outputJar), ChangelogGeneratorTests.testChangelogGenerator(outputChangelog),
+            ChangelogFetcherTests.testChangelogFetcher(oldOutputChangelog),
             ChangelogProcessorTests.testChangelogProcessor(outputChangelog),
             updater, milestoneUpdater, NotificationSenderTests.testNotificationSender(wm1)) {
             @Override
@@ -64,6 +69,11 @@ class PostReleaseWorkflowAcceptanceTests {
             @Override
             String ghOrgRepo() {
                 return "micrometer-metrics/micrometer";
+            }
+
+            @Override
+            String previousRefName() {
+                return "v1.13.9";
             }
         };
 

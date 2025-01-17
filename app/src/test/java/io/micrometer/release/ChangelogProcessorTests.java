@@ -92,8 +92,8 @@ class ChangelogProcessorTests {
     }
 
     @Test
-    void should_parse_changelog() throws Exception {
-        processor.processChangelog(input);
+    void should_parse_single_changelog() throws Exception {
+        processor.processChangelog(input, null);
 
         // Additional new line gets added
         then(Files.readString(output.toPath())).isEqualToIgnoringNewLines(

@@ -23,7 +23,8 @@ public class Main {
 
     private static PostReleaseWorkflow newWorkflow() {
         return new PostReleaseWorkflow(new ChangelogGeneratorDownloader(),
-            new ChangelogGenerator(), new ChangelogProcessor(), new ReleaseNotesUpdater(),
+            new ChangelogGenerator(), new ChangelogFetcher(),
+            new ChangelogProcessor(), new ReleaseNotesUpdater(),
             new MilestoneUpdater(),
             new NotificationSender());
     }

@@ -36,7 +36,7 @@ class ChangelogFetcher {
     }
 
     // for tests
-    ChangelogFetcher(String githubApi, File outputFile, ProcessRunner processRunner) {
+    ChangelogFetcher(File outputFile, ProcessRunner processRunner) {
         this.outputFile = outputFile;
         this.processRunner = processRunner;
     }
