@@ -10,6 +10,7 @@ import java.util.*;
 class Changelog {
 
     private final List<String> header = new ArrayList<>();
+
     private final Map<Section, ChangelogSection> sections = new LinkedHashMap<>();
 
     void addSection(ChangelogSection section) {
@@ -25,8 +26,7 @@ class Changelog {
     }
 
     Collection<ChangelogSection> getSections() {
-        return sections.values().stream().sorted(Comparator.comparing(ChangelogSection::getSection))
-            .toList();
+        return sections.values().stream().sorted(Comparator.comparing(ChangelogSection::getSection)).toList();
     }
 
     static Changelog parse(File file) throws IOException {
@@ -38,7 +38,8 @@ class Changelog {
         for (String line : lines) {
             if (line.startsWith("## ")) {
                 currentSection = changelog.getSection(Section.fromTitle(line.substring(3).trim()));
-            } else if (currentSection != null && !line.trim().isEmpty()) {
+            }
+            else if (currentSection != null && !line.trim().isEmpty()) {
                 currentSection.addEntry(line);
             }
 
@@ -46,4 +47,5 @@ class Changelog {
 
         return changelog;
     }
+
 }

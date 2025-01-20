@@ -34,17 +34,13 @@ class ChangelogFetcherTests {
         File changelog = changelogFetcher.fetchChangelog("v1.13.8", "micrometer-metrics/micrometer");
 
         then(changelog).isSameAs(output);
-        verify(processRunner)
-            .run("sh",
-                "-c",
-                String.format("gh release view %s --repo %s/%s --json body --jq .body > %s",
-                    "v1.13.8",
-                    "micrometer-metrics",
-                    "micrometer",
-                    changelog.getAbsolutePath()));
+        verify(processRunner).run("sh", "-c",
+                String.format("gh release view %s --repo %s/%s --json body --jq .body > %s", "v1.13.8",
+                        "micrometer-metrics", "micrometer", changelog.getAbsolutePath()));
     }
 
     static ChangelogFetcher testChangelogFetcher(File output) {
         return new ChangelogFetcher(output, mock(ProcessRunner.class));
     }
+
 }

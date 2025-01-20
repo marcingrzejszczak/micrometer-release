@@ -53,10 +53,9 @@ class ChangelogGenerator {
 
     File generateChangelog(String githubRefName, String githubOrgRepo, File jarPath) {
         log.info("Generating changelog...");
-        processRunner.run(getJava(), "-jar", jarPath.getAbsolutePath(),
-            githubRefName.replace("v", ""), outputFile.getAbsolutePath(),
-            "--changelog.repository=" + githubOrgRepo,
-            "--github.api-url=" + githubApi, "--github.token=" + githubToken);
+        processRunner.run(getJava(), "-jar", jarPath.getAbsolutePath(), githubRefName.replace("v", ""),
+                outputFile.getAbsolutePath(), "--changelog.repository=" + githubOrgRepo,
+                "--github.api-url=" + githubApi, "--github.token=" + githubToken);
         return outputFile;
     }
 

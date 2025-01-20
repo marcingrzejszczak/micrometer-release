@@ -46,13 +46,8 @@ class ChangelogFetcher {
         // TODO: Move to a util
         String orgName = githubOrgRepo.contains("/") ? githubOrgRepo.split("/")[0] : githubOrgRepo;
         String repoName = githubOrgRepo.contains("/") ? githubOrgRepo.split("/")[1] : githubOrgRepo;
-        processRunner.run("sh",
-            "-c",
-            String.format("gh release view %s --repo %s/%s --json body --jq .body > %s",
-                githubRefName,
-                orgName,
-                repoName,
-                outputFile.getAbsolutePath()));
+        processRunner.run("sh", "-c", String.format("gh release view %s --repo %s/%s --json body --jq .body > %s",
+                githubRefName, orgName, repoName, outputFile.getAbsolutePath()));
         return outputFile;
     }
 

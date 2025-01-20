@@ -29,8 +29,8 @@ class MilestoneUpdaterTests {
 
         milestoneUpdater.closeMilestone("v1.2.3");
 
-        verify(processRunner).run("gh", "api",
-            "/repos/micrometer-metrics/milestones?state=open", "--jq",
-            "\".[] | select(.title == \\\"1.2.3\\\").number\"");
+        verify(processRunner).run("gh", "api", "/repos/micrometer-metrics/milestones?state=open", "--jq",
+                "\".[] | select(.title == \\\"1.2.3\\\").number\"");
     }
+
 }

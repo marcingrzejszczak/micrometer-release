@@ -61,8 +61,8 @@ class ChangelogProcessor {
 
         // Process dependencies section specially
         ChangelogSection depsSection = currentChangelog.getSection(Section.UPGRADES);
-        Set<String> processedDeps = processDependencyUpgrades(depsSection.getEntries(), testAndOptional);
-        depsSection.getEntries().clear();
+        Collection<String> processedDeps = processDependencyUpgrades(depsSection.getEntries(), testAndOptional);
+        depsSection.clear();
         processedDeps.forEach(depsSection::addEntry);
 
         // Write the result
@@ -150,7 +150,8 @@ class ChangelogProcessor {
         }
     }
 
-    private Set<String> processDependencyUpgrades(Iterable<String> dependencyLines, Set<String> excludedDependencies) {
+    private Collection<String> processDependencyUpgrades(Iterable<String> dependencyLines,
+            Set<String> excludedDependencies) {
         Map<String, DependencyUpgrade> upgrades = new HashMap<>();
         Pattern pattern = Pattern.compile("- Bump (.+?) from ([\\d.]+) to ([\\d.]+) \\[(#[\\d]+)]\\((.+)\\)");
 
@@ -175,7 +176,8 @@ class ChangelogProcessor {
             .stream()
             .sorted(Comparator.comparing(DependencyUpgrade::getUnit))
             .map(DependencyUpgrade::toString)
-            .collect(Collectors.toSet());
+            .distinct()
+            .toList();
     }
 
     private static class DependencyUpgrade {

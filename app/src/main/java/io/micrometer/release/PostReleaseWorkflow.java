@@ -34,9 +34,9 @@ public class PostReleaseWorkflow {
     private final NotificationSender notificationSender;
 
     PostReleaseWorkflow(ChangelogGeneratorDownloader changelogGeneratorDownloader,
-            ChangelogGenerator changelogGenerator, ChangelogFetcher changelogFetcher, ChangelogProcessor changelogProcessor,
-            ReleaseNotesUpdater releaseNotesUpdater, MilestoneUpdater milestoneUpdater,
-            NotificationSender notificationSender) {
+            ChangelogGenerator changelogGenerator, ChangelogFetcher changelogFetcher,
+            ChangelogProcessor changelogProcessor, ReleaseNotesUpdater releaseNotesUpdater,
+            MilestoneUpdater milestoneUpdater, NotificationSender notificationSender) {
         this.changelogGeneratorDownloader = changelogGeneratorDownloader;
         this.changelogGenerator = changelogGenerator;
         this.changelogFetcher = changelogFetcher;

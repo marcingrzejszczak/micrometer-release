@@ -28,14 +28,11 @@ class ProcessRunner {
 
     void run(String... command) {
         try {
-            Process process = new ProcessBuilder(command)
-                .inheritIO()
-                .start();
+            Process process = new ProcessBuilder(command).inheritIO().start();
 
             log.info("Printing out process logs:\n\n");
 
-            try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(process.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     log.info(line);
@@ -44,8 +41,10 @@ class ProcessRunner {
             if (process.waitFor() != 0) {
                 throw new RuntimeException("Failed to run the command [" + command + "]");
             }
-        } catch (IOException | InterruptedException e) {
+        }
+        catch (IOException | InterruptedException e) {
             throw new RuntimeException("A failure around the process execution happened", e);
         }
     }
+
 }
