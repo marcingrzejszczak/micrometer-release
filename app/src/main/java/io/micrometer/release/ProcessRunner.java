@@ -15,6 +15,9 @@
  */
 package io.micrometer.release;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +29,12 @@ class ProcessRunner {
 
     private static final Logger log = LoggerFactory.getLogger(ProcessRunner.class);
 
-    void run(String... command) {
+    List<String> run(List<String> command) {
+        return run(command.toArray(new String[0]));
+    }
+
+    List<String> run(String... command) {
+        List<String> lines = new ArrayList<>();
         try {
             Process process = new ProcessBuilder(command).inheritIO().start();
 
@@ -36,6 +44,7 @@ class ProcessRunner {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     log.info(line);
+                    lines.add(line);
                 }
             }
             if (process.waitFor() != 0) {
@@ -45,6 +54,7 @@ class ProcessRunner {
         catch (IOException | InterruptedException e) {
             throw new RuntimeException("A failure around the process execution happened", e);
         }
+        return lines;
     }
 
 }

@@ -17,7 +17,7 @@ package io.micrometer.release;
 
 import java.io.File;
 
-public class PostReleaseWorkflow {
+class PostReleaseWorkflow {
 
     private final ChangelogGeneratorDownloader changelogGeneratorDownloader;
 
@@ -71,7 +71,7 @@ public class PostReleaseWorkflow {
         updateReleaseNotes(githubRefName, changelog);
 
         // Step 5: Close milestone
-        closeMilestone(githubRefName);
+        updateMilestones(githubRefName);
 
         // Step 6: Send notifications
         sendNotifications(githubRepo, githubRefName);
@@ -109,7 +109,8 @@ public class PostReleaseWorkflow {
         releaseNotesUpdater.updateReleaseNotes(refName, changelog);
     }
 
-    private void closeMilestone(String refName) {
+    private void updateMilestones(String refName) {
+        milestoneUpdater.updateMilestones(refName);
         milestoneUpdater.closeMilestone(refName);
     }
 

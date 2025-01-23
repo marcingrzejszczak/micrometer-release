@@ -37,6 +37,8 @@ class ChangelogProcessor {
 
     private final File outputFile;
 
+    private final ProcessRunner processRunner = new ProcessRunner();
+
     ChangelogProcessor() {
         this.outputFile = new File(OUTPUT_FILE);
     }
@@ -93,7 +95,7 @@ class ChangelogProcessor {
             .map(line -> line.substring(line.indexOf(":") + 1, line.lastIndexOf("'")).trim())
             .toList();
 
-        log.info("Subprojects: " + subprojects);
+        log.info("Subprojects: {}", subprojects);
 
         Set<String> testOptionalDependencies = new HashSet<>();
         Set<String> implementationDependencies = new HashSet<>();
@@ -103,49 +105,40 @@ class ChangelogProcessor {
             gradleCommand.add("./gradlew");
             subprojects.forEach(subproject -> gradleCommand.add(subproject + ":dependencies"));
 
-            try (InputStream inputStream = dependenciesInputStream(gradleCommand);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-                String line;
-                boolean testOrOptional = false;
-                while ((line = reader.readLine()) != null) {
-                    final String readLine = line;
-                    if (readLine.startsWith("+---") || readLine.startsWith("\\---")) {
-                        String[] parts = line.split("[: ]");
-                        String dependency = parts[1] + ":" + parts[2];
-                        if (testOrOptional) {
-                            testOptionalDependencies.add(dependency);
-                        }
-                        else {
-                            implementationDependencies.add(dependency);
-                        }
+            boolean testOrOptional = false;
+            for (String line : dependenciesLines(gradleCommand)) {
+                if (line.startsWith("+---") || line.startsWith("\\---")) {
+                    String[] parts = line.split("[: ]");
+                    String dependency = parts[1] + ":" + parts[2];
+                    if (testOrOptional) {
+                        testOptionalDependencies.add(dependency);
                     }
-                    else if (excludedDependencyScopes.stream()
-                        .anyMatch(string -> readLine.toLowerCase().contains(string.toLowerCase()))) {
-                        testOrOptional = true;
+                    else {
+                        implementationDependencies.add(dependency);
                     }
-                    else if (readLine.isEmpty() || readLine.isBlank()) {
-                        testOrOptional = false;
-                    }
+                }
+                else if (excludedDependencyScopes.stream()
+                    .anyMatch(string -> line.toLowerCase().contains(string.toLowerCase()))) {
+                    testOrOptional = true;
+                }
+                else if (line.isEmpty() || line.isBlank()) {
+                    testOrOptional = false;
                 }
             }
 
             testOptionalDependencies.removeAll(implementationDependencies);
-            log.info("Excluded dependencies: " + testOptionalDependencies);
+            log.info("Excluded dependencies: {}", testOptionalDependencies);
         }
 
         return testOptionalDependencies;
     }
 
-    InputStream dependenciesInputStream(List<String> gradleCommand) throws Exception {
-        Process depProcess = new ProcessBuilder(gradleCommand).start();
-        return depProcess.getInputStream();
+    List<String> dependenciesLines(List<String> gradleCommand) {
+        return processRunner.run(gradleCommand);
     }
 
-    List<String> projectLines() throws Exception {
-        Process process = new ProcessBuilder("./gradlew", "projects").start();
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            return bufferedReader.lines().toList();
-        }
+    List<String> projectLines() {
+        return processRunner.run("./gradlew", "projects");
     }
 
     private Collection<String> processDependencyUpgrades(Iterable<String> dependencyLines,

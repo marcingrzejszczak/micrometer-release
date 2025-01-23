@@ -15,21 +15,18 @@
  */
 package io.micrometer.release;
 
-public class Main {
+import org.junit.jupiter.api.Test;
 
-    public static void main(String[] args) throws Exception {
-        // Env Vars
-        // GITHUB_TOKEN
-        // CHANGELOG_GENERATOR_VERSION
-        // GITHUB_REF_NAME
-        // PREVIOUS_REF_NAME
-        newWorkflow().run();
+class MilestoneMigratorTests {
+
+    @Test
+    void should_throw_exception_when_no_milestone_found() {
+
     }
 
-    private static PostReleaseWorkflow newWorkflow() {
-        return new PostReleaseWorkflow(new ChangelogGeneratorDownloader(), new ChangelogGenerator(),
-                new ChangelogFetcher(), new ChangelogProcessor(), new ReleaseNotesUpdater(), new MilestoneUpdater(),
-                new NotificationSender());
+    @Test
+    void should_throw_exception_when_no_generic_milestone_found() {
+
     }
 
 }
