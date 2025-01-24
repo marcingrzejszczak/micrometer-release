@@ -26,10 +26,6 @@ class ReleaseNotesUpdater {
 
     private final ProcessRunner processRunner;
 
-    ReleaseNotesUpdater() {
-        this.processRunner = new ProcessRunner();
-    }
-
     ReleaseNotesUpdater(ProcessRunner processRunner) {
         this.processRunner = processRunner;
     }

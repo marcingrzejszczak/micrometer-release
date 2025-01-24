@@ -61,7 +61,7 @@ class ChangelogProcessorTests {
     ChangelogProcessor processor = testChangelogProcessor(output);
 
     static ChangelogProcessor testChangelogProcessor(File output) {
-        return new ChangelogProcessor(output) {
+        return new ChangelogProcessor(new ProcessRunner(), output) {
             @Override
             List<String> projectLines() {
                 URL resource = ChangelogGeneratorTests.class.getResource("/gradle/projects_output.txt");

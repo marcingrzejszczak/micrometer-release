@@ -37,13 +37,15 @@ class ChangelogProcessor {
 
     private final File outputFile;
 
-    private final ProcessRunner processRunner = new ProcessRunner();
+    private final ProcessRunner processRunner;
 
-    ChangelogProcessor() {
+    ChangelogProcessor(ProcessRunner processRunner) {
+        this.processRunner = processRunner;
         this.outputFile = new File(OUTPUT_FILE);
     }
 
-    ChangelogProcessor(File changelogOutput) {
+    ChangelogProcessor(ProcessRunner processRunner, File changelogOutput) {
+        this.processRunner = processRunner;
         this.outputFile = changelogOutput;
     }
 

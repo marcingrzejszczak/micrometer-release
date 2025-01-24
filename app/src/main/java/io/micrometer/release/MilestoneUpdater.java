@@ -34,9 +34,9 @@ class MilestoneUpdater {
         this.milestoneMigrator = milestoneMigrator;
     }
 
-    MilestoneUpdater() {
+    MilestoneUpdater(ProcessRunner processRunner) {
         this.githubRepository = System.getenv("GITHUB_REPOSITORY");
-        this.processRunner = new ProcessRunner();
+        this.processRunner = processRunner;
         this.milestoneMigrator = new MilestoneMigrator(this.processRunner, this.githubRepository,
                 new MilestoneIssueReasigner(processRunner, githubRepository));
     }
