@@ -41,8 +41,8 @@ class MilestoneUpdater {
                 new MilestoneIssueReasigner(processRunner, githubRepository));
     }
 
-    void updateMilestones(String githubRefName) {
-        this.milestoneMigrator.migrateMilestones(githubRefName);
+    MilestoneWithDeadline updateMilestones(String githubRefName) {
+        return this.milestoneMigrator.migrateMilestones(githubRefName);
     }
 
     void closeMilestone(String githubRefName) {

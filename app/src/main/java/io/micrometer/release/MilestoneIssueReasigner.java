@@ -35,25 +35,29 @@ class MilestoneIssueReasigner {
         this.ghRepo = ghRepo;
     }
 
-    void reassignIssues(Milestone concreteMilestone, String refName, List<Integer> closedIssues,
+    MilestoneWithDeadline reassignIssues(Milestone concreteMilestone, String refName, List<Integer> closedIssues,
             List<Integer> openIssues) {
+        String title = refName.startsWith("v") ? refName.substring(1) : refName;
         log.info("Moving closed issues to concrete milestone {}", concreteMilestone.number());
         reassignIssues(closedIssues, concreteMilestone.number());
 
         // Create next milestone if GA version
-        if (!refName.contains("-")) {
-            String[] parts = refName.split("\\.");
+        if (!title.contains("-")) {
+            String[] parts = title.split("\\.");
             String nextVersion = parts[0] + "." + parts[1] + "." + (Integer.parseInt(parts[2]) + 1);
             log.info("Version is GA will create a new milestone {}", nextVersion);
 
-            int newMilestoneNumber = createMilestone(nextVersion);
+            MilestoneWithDeadline newMilestone = createMilestone(nextVersion);
 
             // Move open issues to next milestone
-            reassignIssues(openIssues, newMilestoneNumber);
+            reassignIssues(openIssues, newMilestone.id());
+
+            return newMilestone;
         }
         else {
-            log.info("Version {} is not GA, won't create a new milestone", refName);
+            log.info("Version {} is not GA, won't create a new milestone", title);
         }
+        return null;
     }
 
     private void reassignIssues(List<Integer> issueNumbers, int milestoneNumber) {
@@ -63,23 +67,20 @@ class MilestoneIssueReasigner {
         }
     }
 
-    private int createMilestone(String version) {
+    private MilestoneWithDeadline createMilestone(String version) {
         LocalDate dueDate = ReleaseDateCalculator.calculateDueDate(version);
 
+        // Using 17:00 UTC for consistency
         List<String> lines = processRunner.run("gh", "api", "/repos/" + ghRepo + "/milestones", "-X", "POST", "-f",
-                "title=" + version, "-f", "due_on=" + dueDate.toString() + "T17:00:00Z" // Using
-        // 17:00
-        // UTC
-        // for
-        // consistency
-        );
+                "title=" + version, "-f", "due_on=" + dueDate.toString() + "T17:00:00Z");
 
         if (lines.isEmpty()) {
             throw new IllegalStateException("Could not create milestone " + version);
         }
 
         String line = lines.get(0);
-        return Integer.parseInt(line.split("\"number\":")[1].split(",")[0].trim());
+        int milestoneId = Integer.parseInt(line.split("\"number\":")[1].split(",")[0].trim());
+        return new MilestoneWithDeadline(milestoneId, version, dueDate);
     }
 
 }

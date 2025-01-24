@@ -37,7 +37,7 @@ class MilestoneMigrator {
         this.milestoneIssueReasigner = milestoneIssueReasigner;
     }
 
-    void migrateMilestones(String refName) {
+    MilestoneWithDeadline migrateMilestones(String refName) {
         log.info("Migrating milestones");
         // Find concrete milestone (e.g. 1.14.4)
         Milestone concreteMilestone = findMilestone(refName);
@@ -56,29 +56,36 @@ class MilestoneMigrator {
         log.info(
                 "For ref [{}] and generic version [{}] found a corresponding generic milestone with id [{}] and title [{}]",
                 refName, genericVersion, genericMilestone.number, genericMilestone.title);
-        reassignIssues(refName, genericMilestone, concreteMilestone);
+        return reassignIssues(refName, genericMilestone, concreteMilestone);
     }
 
-    private void reassignIssues(String refName, Milestone genericMilestone, Milestone concreteMilestone) {
+    private MilestoneWithDeadline reassignIssues(String refName, Milestone genericMilestone,
+            Milestone concreteMilestone) {
         // Get all issues from generic milestone
+        List<Issue> concreteIssues = getIssuesForMilestone(concreteMilestone.number());
         List<Issue> genericIssues = getIssuesForMilestone(genericMilestone.number());
 
         // Split issues by state
         List<Integer> closedIssues = new ArrayList<>();
         List<Integer> openIssues = new ArrayList<>();
+        // Move closed issues in generic to next release
         for (Issue issue : genericIssues) {
             if ("closed".equals(issue.state())) {
                 closedIssues.add(issue.number());
             }
-            else {
+        }
+        // Move open issues in current to next release
+        for (Issue issue : concreteIssues) {
+            if ("open".equals(issue.state())) {
                 openIssues.add(issue.number());
             }
         }
 
-        milestoneIssueReasigner.reassignIssues(concreteMilestone, refName, closedIssues, openIssues);
+        return milestoneIssueReasigner.reassignIssues(concreteMilestone, refName, closedIssues, openIssues);
     }
 
-    private Milestone findMilestone(String title) {
+    private Milestone findMilestone(String refName) {
+        String title = refName.startsWith("v") ? refName.substring(1) : refName;
         List<String> lines = processRunner.run("gh", "api", "/repos/" + ghRepo + "/milestones", "--jq",
                 String.format(".[] | select(.title == \"%s\") | {number: .number, title: .title}", title));
         if (lines.isEmpty()) {

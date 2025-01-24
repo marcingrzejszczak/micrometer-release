@@ -19,7 +19,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         // Env Vars
-        // GITHUB_TOKEN
+        // GH_TOKEN
         // CHANGELOG_GENERATOR_VERSION
         // GITHUB_REPOSITORY
         // GITHUB_REF_NAME

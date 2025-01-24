@@ -19,7 +19,7 @@ class MainTests {
 
     public static void main(String[] args) throws Exception {
         // Env Vars
-        // GITHUB_TOKEN
+        // GH_TOKEN
         // CHANGELOG_GENERATOR_VERSION
         // GITHUB_REPOSITORY
         // GITHUB_REF_NAME
@@ -28,10 +28,10 @@ class MainTests {
     }
 
     private static PostReleaseWorkflow newWorkflow() {
-        ProcessRunner processRunner = new ProcessRunner();
+        ProcessRunner processRunner = new ProcessRunner(System.getenv("GITHUB_REPOSITORY"));
         return new PostReleaseWorkflow(new ChangelogGeneratorDownloader(),
                 ChangelogGeneratorTests.testChangelogGenerator(), new ChangelogFetcher(processRunner),
-                new ChangelogProcessor(processRunner), new ReleaseNotesUpdater(processRunner),
+                ChangelogProcessorTests.testChangelogProcessor(), new ReleaseNotesUpdater(processRunner),
                 new MilestoneUpdater(processRunner), new NotificationSender());
     }
 

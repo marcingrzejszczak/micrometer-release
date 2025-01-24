@@ -60,7 +60,7 @@ class ChangelogGeneratorTests {
     }
 
     static ChangelogGenerator testChangelogGenerator() {
-        return testChangelogGenerator("http://localhost:60006", new File(ChangelogGenerator.INPUT_FILE));
+        return testChangelogGenerator(ChangelogGenerator.GITHUB_API_URL, new File(ChangelogGenerator.INPUT_FILE));
     }
 
     static ChangelogGenerator testChangelogGenerator(File changelogOutput) {

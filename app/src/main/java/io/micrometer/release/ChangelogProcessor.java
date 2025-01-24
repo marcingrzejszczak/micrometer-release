@@ -49,7 +49,7 @@ class ChangelogProcessor {
         this.outputFile = changelogOutput;
     }
 
-    void processChangelog(File changelog, File oldChangelog) throws Exception {
+    File processChangelog(File changelog, File oldChangelog) throws Exception {
         Set<String> testAndOptional = fetchTestAndOptionalDependencies();
 
         Changelog currentChangelog = Changelog.parse(changelog);
@@ -87,9 +87,10 @@ class ChangelogProcessor {
                 writer.write("\n");
             }
         }
+        return outputFile;
     }
 
-    private Set<String> fetchTestAndOptionalDependencies() throws Exception {
+    private Set<String> fetchTestAndOptionalDependencies() {
         log.info("Fetching test and optional dependencies...");
         List<String> projectLines = projectLines();
         List<String> subprojects = projectLines.stream()

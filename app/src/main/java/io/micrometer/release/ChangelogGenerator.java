@@ -38,7 +38,7 @@ class ChangelogGenerator {
 
     public ChangelogGenerator(ProcessRunner processRunner) {
         this.githubApi = GITHUB_API_URL;
-        this.githubToken = System.getenv("GITHUB_TOKEN");
+        this.githubToken = System.getenv("GH_TOKEN");
         this.outputFile = new File(INPUT_FILE);
         this.processRunner = processRunner;
     }
@@ -47,7 +47,7 @@ class ChangelogGenerator {
     ChangelogGenerator(String githubApi, File outputFile) {
         this.githubApi = githubApi;
         this.outputFile = outputFile;
-        this.githubToken = "";
+        this.githubToken = System.getenv("GH_TOKEN");
         this.processRunner = new ProcessRunner();
     }
 
