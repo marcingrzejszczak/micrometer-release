@@ -40,22 +40,24 @@ class MilestoneMigrator {
     MilestoneWithDeadline migrateMilestones(String refName) {
         log.info("Migrating milestones");
         // Find concrete milestone (e.g. 1.14.4)
-        Milestone concreteMilestone = findMilestone(refName);
+        String title = refName.startsWith("v") ? refName.substring(1) : refName;
+        Milestone concreteMilestone = findMilestone(title);
         if (concreteMilestone == null) {
-            throw new IllegalStateException("Could not find milestone for " + refName);
+            throw new IllegalStateException("Could not find milestone for <" + refName + ">");
         }
         log.info("Found concrete milestone with id [{}] and title [{}]", concreteMilestone.number,
                 concreteMilestone.title);
 
         // Find generic milestone (e.g. 1.14.x)
-        String genericVersion = refName.substring(0, refName.lastIndexOf('.')) + ".x";
-        Milestone genericMilestone = findMilestone(genericVersion);
+        String genericRef = refName.substring(0, refName.lastIndexOf('.')) + ".x";
+        String genericTitle = genericRef.startsWith("v") ? genericRef.substring(1) : genericRef;
+        Milestone genericMilestone = findMilestone(genericTitle);
         if (genericMilestone == null) {
-            throw new IllegalStateException("Could not find generic milestone " + genericVersion);
+            throw new IllegalStateException("Could not find generic milestone <" + genericTitle + ">");
         }
         log.info(
                 "For ref [{}] and generic version [{}] found a corresponding generic milestone with id [{}] and title [{}]",
-                refName, genericVersion, genericMilestone.number, genericMilestone.title);
+                refName, genericTitle, genericMilestone.number, genericMilestone.title);
         return reassignIssues(refName, genericMilestone, concreteMilestone);
     }
 
@@ -84,12 +86,11 @@ class MilestoneMigrator {
         return milestoneIssueReassigner.reassignIssues(concreteMilestone, refName, closedIssues, openIssues);
     }
 
-    private Milestone findMilestone(String refName) {
-        String title = refName.startsWith("v") ? refName.substring(1) : refName;
+    private Milestone findMilestone(String title) {
         List<String> lines = processRunner.run("gh", "api", "/repos/" + ghRepo + "/milestones", "--jq",
                 String.format(".[] | select(.title == \"%s\") | {number: .number, title: .title}", title));
         if (lines.isEmpty()) {
-            throw new IllegalStateException("Could not find milestone " + title);
+            throw new IllegalStateException("No response from gh cli for version <" + title + ">");
         }
         String line = lines.get(0);
         if (line == null || line.isBlank()) {
