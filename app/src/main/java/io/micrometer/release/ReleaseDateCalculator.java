@@ -25,7 +25,7 @@ import java.time.LocalDate;
  */
 class ReleaseDateCalculator {
 
-    static LocalDate calculateDueDate(String version) {
+    static LocalDate calculateDueDate(LocalDate now, String version) {
         // Parse version
         String[] parts = version.split("\\.");
         if (parts.length < 3) {
@@ -36,20 +36,12 @@ class ReleaseDateCalculator {
         boolean isQualified = version.contains("-");
         String qualifier = isQualified ? version.substring(version.indexOf("-") + 1) : null;
 
-        LocalDate now = LocalDate.now();
         LocalDate dueDate;
 
         if (isQualified) {
             // Handle milestone and RC releases
-            if (qualifier.startsWith("M")) {
-                int milestoneNumber = Integer.parseInt(qualifier.substring(1));
-                if (milestoneNumber > 3) {
-                    throw new IllegalArgumentException("Invalid milestone number: " + milestoneNumber);
-                }
+            if (qualifier.startsWith("M") || qualifier.startsWith("RC")) {
                 // Milestone releases are on second Monday
-                dueDate = getSecondMonday(now);
-            }
-            else if (qualifier.startsWith("RC")) {
                 // RC follows M3, on second Monday
                 dueDate = getSecondMonday(now);
             }
@@ -80,7 +72,9 @@ class ReleaseDateCalculator {
     private static LocalDate getSecondMonday(LocalDate date) {
         // Go to first day of the month
         LocalDate firstDay = date.withDayOfMonth(1);
-
+        if (firstDay.isBefore(date)) {
+            firstDay = date.plusMonths(1).withDayOfMonth(1);
+        }
         // Find first Monday
         LocalDate firstMonday = firstDay.plusDays((8 - firstDay.getDayOfWeek().getValue()) % 7);
 

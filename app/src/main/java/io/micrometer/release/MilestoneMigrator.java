@@ -29,12 +29,12 @@ class MilestoneMigrator {
 
     private final String ghRepo;
 
-    private final MilestoneIssueReasigner milestoneIssueReasigner;
+    private final MilestoneIssueReassigner milestoneIssueReassigner;
 
-    MilestoneMigrator(ProcessRunner processRunner, String ghRepo, MilestoneIssueReasigner milestoneIssueReasigner) {
+    MilestoneMigrator(ProcessRunner processRunner, String ghRepo, MilestoneIssueReassigner milestoneIssueReassigner) {
         this.processRunner = processRunner;
         this.ghRepo = ghRepo;
-        this.milestoneIssueReasigner = milestoneIssueReasigner;
+        this.milestoneIssueReassigner = milestoneIssueReassigner;
     }
 
     MilestoneWithDeadline migrateMilestones(String refName) {
@@ -81,7 +81,7 @@ class MilestoneMigrator {
             }
         }
 
-        return milestoneIssueReasigner.reassignIssues(concreteMilestone, refName, closedIssues, openIssues);
+        return milestoneIssueReassigner.reassignIssues(concreteMilestone, refName, closedIssues, openIssues);
     }
 
     private Milestone findMilestone(String refName) {

@@ -27,7 +27,7 @@ class MilestoneUpdaterTests {
         ProcessRunner processRunner = mock();
         String ghRepo = "micrometer-metrics";
         MilestoneUpdater milestoneUpdater = new MilestoneUpdater(processRunner, ghRepo,
-                new MilestoneMigrator(processRunner, ghRepo, new MilestoneIssueReasigner(processRunner, ghRepo)));
+                new MilestoneMigrator(processRunner, ghRepo, new MilestoneIssueReassigner(processRunner, ghRepo)));
 
         milestoneUpdater.closeMilestone("v1.2.3");
 

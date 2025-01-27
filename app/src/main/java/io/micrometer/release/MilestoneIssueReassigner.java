@@ -22,42 +22,31 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.List;
 
-class MilestoneIssueReasigner {
+class MilestoneIssueReassigner {
 
-    private static final Logger log = LoggerFactory.getLogger(MilestoneIssueReasigner.class);
+    private static final Logger log = LoggerFactory.getLogger(MilestoneIssueReassigner.class);
 
     private final ProcessRunner processRunner;
 
     private final String ghRepo;
 
-    MilestoneIssueReasigner(ProcessRunner processRunner, String ghRepo) {
+    MilestoneIssueReassigner(ProcessRunner processRunner, String ghRepo) {
         this.processRunner = processRunner;
         this.ghRepo = ghRepo;
     }
 
-    MilestoneWithDeadline reassignIssues(Milestone concreteMilestone, String refName, List<Integer> closedIssues,
-            List<Integer> openIssues) {
+    MilestoneWithDeadline reassignIssues(Milestone concreteMilestone, String refName,
+            List<Integer> closedIssuesInGenericMilestone, List<Integer> openIssuesInConcreteMilestone) {
         String title = refName.startsWith("v") ? refName.substring(1) : refName;
         log.info("Moving closed issues to concrete milestone {}", concreteMilestone.number());
-        reassignIssues(closedIssues, concreteMilestone.number());
+        reassignIssues(closedIssuesInGenericMilestone, concreteMilestone.number());
 
-        // Create next milestone if GA version
-        if (!title.contains("-")) {
-            String[] parts = title.split("\\.");
-            String nextVersion = parts[0] + "." + parts[1] + "." + (Integer.parseInt(parts[2]) + 1);
-            log.info("Version is GA will create a new milestone {}", nextVersion);
-
-            MilestoneWithDeadline newMilestone = createMilestone(nextVersion);
-
-            // Move open issues to next milestone
-            reassignIssues(openIssues, newMilestone.id());
-
-            return newMilestone;
-        }
-        else {
-            log.info("Version {} is not GA, won't create a new milestone", title);
-        }
-        return null;
+        String nextVersion = ReleaseVersionCalculator.calculateNextVersion(title);
+        MilestoneWithDeadline newMilestone = createMilestone(nextVersion);
+        // Move open issues in concrete milestone (1.0.0-M1 or 1.0.1) to next milestone
+        // (1.0.0-M2 or 1.0.2)
+        reassignIssues(openIssuesInConcreteMilestone, newMilestone.id());
+        return newMilestone;
     }
 
     private void reassignIssues(List<Integer> issueNumbers, int milestoneNumber) {
@@ -68,7 +57,7 @@ class MilestoneIssueReasigner {
     }
 
     private MilestoneWithDeadline createMilestone(String version) {
-        LocalDate dueDate = ReleaseDateCalculator.calculateDueDate(version);
+        LocalDate dueDate = ReleaseDateCalculator.calculateDueDate(currentDate(), version);
 
         // Using 17:00 UTC for consistency
         List<String> lines = processRunner.run("gh", "api", "/repos/" + ghRepo + "/milestones", "-X", "POST", "-f",
@@ -81,6 +70,10 @@ class MilestoneIssueReasigner {
         String line = lines.get(0);
         int milestoneId = Integer.parseInt(line.split("\"number\":")[1].split(",")[0].trim());
         return new MilestoneWithDeadline(milestoneId, version, dueDate);
+    }
+
+    LocalDate currentDate() {
+        return LocalDate.now();
     }
 
 }

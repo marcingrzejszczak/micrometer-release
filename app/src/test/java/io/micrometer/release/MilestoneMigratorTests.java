@@ -25,7 +25,7 @@ class MilestoneMigratorTests {
 
     ProcessRunner runner = mock();
 
-    MilestoneIssueReasigner reasigner = mock();
+    MilestoneIssueReassigner reasigner = mock();
 
     MilestoneMigrator migrator = new MilestoneMigrator(runner, GH_REPO, reasigner);
 
