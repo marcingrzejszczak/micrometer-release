@@ -15,6 +15,8 @@
  */
 package io.micrometer.release;
 
+import java.io.File;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +28,11 @@ import java.util.*;
 class ProcessRunner {
 
     private static final Logger log = LoggerFactory.getLogger(ProcessRunner.class);
+    public static final String JAVA_PATH_FOR_ECLIPSE_DOCKER_IMAGE = "/opt/java/openjdk";
 
     private final String repo;
+
+    private final Map<String, String> envVars = new HashMap<>();
 
     ProcessRunner() {
         this.repo = null;
@@ -35,6 +40,11 @@ class ProcessRunner {
 
     ProcessRunner(String repo) {
         this.repo = repo;
+    }
+
+    ProcessRunner withEnvVars(Map<String, String> envVars) {
+        this.envVars.putAll(envVars);
+        return this;
     }
 
     List<String> run(List<String> command) {
@@ -107,7 +117,10 @@ class ProcessRunner {
 
     Process doStartProcess(ProcessBuilder processBuilder) throws IOException {
         // TODO: Need to figure out a better way
-        processBuilder.environment().put("JAVA_HOME", "/opt/java/openjdk");
+        if (new File(JAVA_PATH_FOR_ECLIPSE_DOCKER_IMAGE).exists()) {
+            processBuilder.environment().put("JAVA_HOME", JAVA_PATH_FOR_ECLIPSE_DOCKER_IMAGE);
+        }
+        processBuilder.environment().putAll(this.envVars);
         return processBuilder.start();
     }
 
