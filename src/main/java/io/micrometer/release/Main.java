@@ -15,6 +15,9 @@
  */
 package io.micrometer.release;
 
+import io.micrometer.release.common.ProcessRunner;
+import io.micrometer.release.single.*;
+import io.micrometer.release.train.ProjectTrainReleaseWorkflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,9 +81,7 @@ public class Main {
     }
 
     private static PostReleaseWorkflow newPostReleaseWorkflow(ProcessRunner processRunner) {
-        return new PostReleaseWorkflow(new ChangelogGeneratorDownloader(), new ChangelogGenerator(processRunner),
-                new ChangelogFetcher(processRunner), new ChangelogProcessor(processRunner),
-                new ReleaseNotesUpdater(processRunner), new MilestoneUpdater(processRunner), new NotificationSender());
+        return new PostReleaseWorkflow(processRunner);
     }
 
 }

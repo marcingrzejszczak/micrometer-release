@@ -13,26 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micrometer.release;
+package io.micrometer.release.single;
 
 import io.micrometer.release.common.ProcessRunner;
-import io.micrometer.release.single.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class MainTests {
+import java.io.File;
 
-    public static void main(String[] args) throws Exception {
-        // Env Vars
-        // GH_TOKEN
-        // CHANGELOG_GENERATOR_VERSION
-        // GITHUB_REPOSITORY
-        // GITHUB_REF_NAME
-        // PREVIOUS_REF_NAME
-        newWorkflow().run("marcingrzejszczak/gh-actions-test", "v0.0.2", "v0.0.1");
+class ReleaseNotesUpdater {
+
+    private static final Logger log = LoggerFactory.getLogger(ReleaseNotesUpdater.class);
+
+    private final ProcessRunner processRunner;
+
+    ReleaseNotesUpdater(ProcessRunner processRunner) {
+        this.processRunner = processRunner;
     }
 
-    private static PostReleaseWorkflow newWorkflow() {
-        ProcessRunner processRunner = new ProcessRunner("marcingrzejszczak/gh-actions-test");
-        return new PostReleaseWorkflow(processRunner);
+    void updateReleaseNotes(String githubRef, File changelog) {
+        log.info("Updating release notes...");
+        processRunner.run("gh", "release", "edit", githubRef, "--notes-file", changelog.getAbsolutePath());
     }
 
 }

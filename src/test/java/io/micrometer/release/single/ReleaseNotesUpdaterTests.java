@@ -13,26 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micrometer.release;
+package io.micrometer.release.single;
+
+import static org.mockito.Mockito.mock;
 
 import io.micrometer.release.common.ProcessRunner;
-import io.micrometer.release.single.*;
 
-class MainTests {
+import java.io.File;
 
-    public static void main(String[] args) throws Exception {
-        // Env Vars
-        // GH_TOKEN
-        // CHANGELOG_GENERATOR_VERSION
-        // GITHUB_REPOSITORY
-        // GITHUB_REF_NAME
-        // PREVIOUS_REF_NAME
-        newWorkflow().run("marcingrzejszczak/gh-actions-test", "v0.0.2", "v0.0.1");
-    }
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-    private static PostReleaseWorkflow newWorkflow() {
-        ProcessRunner processRunner = new ProcessRunner("marcingrzejszczak/gh-actions-test");
-        return new PostReleaseWorkflow(processRunner);
+class ReleaseNotesUpdaterTests {
+
+    @Test
+    void should_update_release_notes() {
+        ProcessRunner processRunner = mock();
+        ReleaseNotesUpdater releaseNotesUpdater = new ReleaseNotesUpdater(processRunner);
+        File changelog = new File(".");
+
+        releaseNotesUpdater.updateReleaseNotes("v1.0.0", changelog);
+
+        Mockito.verify(processRunner)
+            .run("gh", "release", "edit", "v1.0.0", "--notes-file", changelog.getAbsolutePath());
     }
 
 }
