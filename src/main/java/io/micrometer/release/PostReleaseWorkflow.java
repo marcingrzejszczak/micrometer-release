@@ -46,12 +46,11 @@ class PostReleaseWorkflow {
         this.notificationSender = notificationSender;
     }
 
-    public void run() throws Exception {
-        String githubOrgRepo = ghOrgRepo(); // micrometer-metrics/tracing
-        String githubRefName = ghRef(); // v1.3.1
-        String previousRefName = previousRefName(); // v1.2.5
+    // micrometer-metrics/tracing
+    // v1.3.1
+    // v1.2.5 (optional)
+    public void run(String githubOrgRepo, String githubRefName, String previousRefName) {
         assertInputs(githubOrgRepo, githubRefName, previousRefName);
-
         String githubRepo = githubOrgRepo.contains("/") ? githubOrgRepo.split("/")[1] : githubOrgRepo;
 
         // Step 1: Close milestone and move issues around
@@ -95,20 +94,13 @@ class PostReleaseWorkflow {
         }
     }
 
-    String ghRef() {
-        return System.getenv("GITHUB_REF_NAME");
-    }
-
-    String ghOrgRepo() {
-        return System.getenv("GITHUB_REPOSITORY");
-    }
-
-    String previousRefName() {
-        return System.getenv("PREVIOUS_REF_NAME");
-    }
-
-    private File downloadChangelogGenerator() throws Exception {
-        return changelogGeneratorDownloader.downloadChangelogGenerator();
+    private File downloadChangelogGenerator() {
+        try {
+            return changelogGeneratorDownloader.downloadChangelogGenerator();
+        }
+        catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private File generateOldChangelog(String githubRefName, String githubOrgRepo) {
@@ -119,8 +111,13 @@ class PostReleaseWorkflow {
         return changelogGenerator.generateChangelog(githubRefName, githubOrgRepo, jarPath);
     }
 
-    private File processChangelog(File changelog, File oldChangelog) throws Exception {
-        return changelogProcessor.processChangelog(changelog, oldChangelog);
+    private File processChangelog(File changelog, File oldChangelog) {
+        try {
+            return changelogProcessor.processChangelog(changelog, oldChangelog);
+        }
+        catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private void updateReleaseNotes(String refName, File changelog) {

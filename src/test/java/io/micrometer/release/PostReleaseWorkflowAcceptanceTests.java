@@ -79,7 +79,7 @@ class PostReleaseWorkflowAcceptanceTests {
     void should_perform_full_post_release_process() throws Exception {
         PostReleaseWorkflow postReleaseWorkflow = testPostReleaseWorkflow(updater);
 
-        postReleaseWorkflow.run();
+        postReleaseWorkflow.run("micrometer-metrics/micrometer", "v1.14.0", "v1.13.9");
 
         then(updater.wasCalled).as("ReleaseNotesUpdater must be called").isTrue();
         verify(milestoneUpdater).closeMilestone("v1.14.0");
@@ -92,22 +92,7 @@ class PostReleaseWorkflowAcceptanceTests {
                 ChangelogGeneratorTests.testChangelogGenerator(outputChangelog),
                 ChangelogFetcherTests.testChangelogFetcher(oldOutputChangelog),
                 ChangelogProcessorTests.testChangelogProcessor(outputChangelog), updater, milestoneUpdater,
-                NotificationSenderTests.testNotificationSender(wm1)) {
-            @Override
-            String ghRef() {
-                return "v1.14.0";
-            }
-
-            @Override
-            String ghOrgRepo() {
-                return "micrometer-metrics/micrometer";
-            }
-
-            @Override
-            String previousRefName() {
-                return "v1.13.9";
-            }
-        };
+                NotificationSenderTests.testNotificationSender(wm1));
     }
 
     static class AssertingReleaseNotesUpdater extends ReleaseNotesUpdater {

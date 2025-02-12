@@ -108,7 +108,7 @@ class ProcessRunner {
         return lines;
     }
 
-    Process startProcess(String[] processedCommand) throws IOException, InterruptedException {
+    Process startProcess(String... processedCommand) throws IOException, InterruptedException {
         if (isGradleCommand(processedCommand)) {
             runGitConfig();
         }

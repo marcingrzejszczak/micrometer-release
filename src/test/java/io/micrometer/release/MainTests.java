@@ -24,11 +24,11 @@ class MainTests {
         // GITHUB_REPOSITORY
         // GITHUB_REF_NAME
         // PREVIOUS_REF_NAME
-        newWorkflow().run();
+        newWorkflow().run("marcingrzejszczak/gh-actions-test", "v0.0.2", "v0.0.1");
     }
 
     private static PostReleaseWorkflow newWorkflow() {
-        ProcessRunner processRunner = new ProcessRunner(System.getenv("GITHUB_REPOSITORY"));
+        ProcessRunner processRunner = new ProcessRunner("marcingrzejszczak/gh-actions-test");
         return new PostReleaseWorkflow(new ChangelogGeneratorDownloader(),
                 ChangelogGeneratorTests.testChangelogGenerator(), new ChangelogFetcher(processRunner),
                 ChangelogProcessorTests.testChangelogProcessor(), new ReleaseNotesUpdater(processRunner),
