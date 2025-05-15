@@ -25,7 +25,7 @@ slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
 
 # plugin dependencies
-plugin-javaformat = { module = "io.spring.javaformat:spring-javaformat-gradle-plugin", version = "0.0.43" }
+plugin-javaformat = { module = "io.spring.javaformat:spring-javaformat-gradle-plugin", version = "0.0.44" }
 plugin-jib = { module = "com.google.cloud.tools.jib:com.google.cloud.tools.jib.gradle.plugin", version = "3.4.4" }
 plugin-license = { module = "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin", version = "0.16.1" }
 plugin-noHttp = { module = "io.spring.nohttp:nohttp-gradle", version = "0.0.11" }
